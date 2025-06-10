@@ -1,0 +1,31 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "
+            /wait-for-it.sh db:5432 -- 
+            python manage.py wait_for_db &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env/dev.env
+    user: "0"  # Run as root temporarily -- gives access for directories
+
+  db:
+    image: postgres:14
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    env_file:
+      - .env/dev.env
+
+volumes:
+  dev-db-data:
