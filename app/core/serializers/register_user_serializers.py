@@ -19,7 +19,6 @@ class RegisterUserSerializer(RestAuthRegisterSerializer):
             user.save()
         
         data = {"user":user}
-        print(data)
         user_signal.send(sender=get_user_model(), data=data)
         auth_verify_signal.send(sender=self.__class__, user=user)
         return user
