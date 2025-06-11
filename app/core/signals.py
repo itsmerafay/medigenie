@@ -27,24 +27,7 @@ def create_profile(sender, **kwargs):
     name = data.get("name", "")
     picture = data.get("picture", "")
 
-    # try:
-    #     age = int(age_str) if age_str else None
-    # except (ValueError, TypeError):
-    #     age = None
-
-    # location = None
-    # if location_name:
-    #     try:
-    #         location = City.objects.get(name__iexact=location_name)
-    #     except City.DoesNotExist:
-    #         try:
-    #             location = location.split(",")[0].strip() if location else ""
-    #             location = City.objects.get(name__iexact=location_name)
-    #         except City.DoesNotExist:
-    #             raise serializers.ValidationError(f"The location '{location_name}' does not exist.")
-    
-    # elif location_name_2:
-    #     location = location_name_2
+    image = None
 
     if picture:
         try:
