@@ -257,6 +257,9 @@ DATABASES = {
         "PASSWORD": env("POSTGRES_PASSWORD"),
         "HOST": env("POSTGRES_HOST"),
         "PORT": env("POSTGRES_PORT"),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
