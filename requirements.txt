@@ -30,3 +30,4 @@ stripe
 daphne
 firebase-admin
 gunicorn
+whitenoise
