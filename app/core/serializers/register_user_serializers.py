@@ -6,10 +6,14 @@ from core.signals import user_signal, auth_verify_signal
 
 class RegisterUserSerializer(RestAuthRegisterSerializer):
     username = None
+    
 
     class Meta :
         model = get_user_model()        
         fields = ('email', 'password1', 'password2')
+
+    def _has_phone_field(self):
+        return hasattr(get_user_model(), 'phone')
 
     def save(self,request, **kwargs):
         user = super().save(request)
