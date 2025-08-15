@@ -13,24 +13,46 @@ from drf_spectacular.utils import extend_schema
 
 User = get_user_model()
 
+@extend_schema(
+    request=CustomLoginSerializer,
+    responses={
+        200: TokenResponseSerializer,
+    },
+)
 class CustomLoginView(RestAuthLoginView):
     serializer_class = CustomLoginSerializer    
 
     def get_response_data(self, user, token, *args, **kwargs):
         return {'status': 'ok',
                 'message':'Please check your email for the verification code.'}
-
+  
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        user = serializer.validated_data["user"]
-        email = user.email
 
-        auth_verify_signal.send(sender=self.__class__, user=user, email=email)
+        email = serializer.validated_data.get("email").lower()
+        password = serializer.validated_data.get("password")
 
-        response_data = self.get_response_data(user, None)
-        return Response(response_data, status=status.HTTP_200_OK)
+        try:
+            user = get_object_or_404(User, email=email)
+            tokens = CustomJWTToken.for_user(user)
+            user_data = UserDetailsSerializer(user).data
+
+            response_data = {
+                "access": tokens["access"],
+                "refresh": tokens["refresh"],
+                "user": user_data
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
 
 @extend_schema(
     request=VerificationCodeSerializer,

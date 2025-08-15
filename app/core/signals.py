@@ -65,12 +65,12 @@ def handle_login_signal(sender, user, **kwargs):
     user.verification_code_expiry = verification_code_expiry
     user.save() 
 
-    # send_mail(
-    #     subject="Your login verification code",
-    #     message=f"Here is your login verification code {verification_code}. Don't share with anyone else.",
-    #     from_email="no-reply@example.com",
-    #     recipient_list=[user.email]
-    # )
+    send_mail(
+        subject="Your verification code",
+        message=f"Here is your verification code {verification_code}. Don't share with anyone else.",
+        from_email="no-reply@example.com",
+        recipient_list=[user.email]
+    )
 
 @receiver(reset_password_token_created)
 def password_reset_token(sender, instance, reset_password_token, *args, **kwargs):
