@@ -10,10 +10,10 @@ services:
       - ./app:/app
     command: >
       sh -c "
-            /wait-for-it.sh db:5432 -- 
-            python manage.py wait_for_db &&
-            python manage.py migrate &&
-            gunicorn medigenie.wsgi:application --bind 0.0.0.0:8000"
+        /wait-for-it.sh db:5432 -- &&
+        python manage.py wait_for_db &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
     env_file:
@@ -21,11 +21,13 @@ services:
     user: "0"  # Run as root temporarily -- gives access for directories
 
   db:
-    image: postgres:14
+    image: postgres:14-alpine
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     env_file:
       - .env/dev.env
+    restart: on-failure
 
 volumes:
   dev-db-data:
+

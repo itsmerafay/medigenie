@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "django_rest_passwordreset",
 
     "core",
+    "docmind",
     "cities_light",
     "django_extensions",
     "django_filters",
@@ -259,7 +260,7 @@ DATABASES = {
         "HOST": env("POSTGRES_HOST"),
         "PORT": env("POSTGRES_PORT"),
         'OPTIONS': {
-            'sslmode': 'require',
+            'sslmode': 'disable',
         },
     }
 }
