@@ -1,4 +1,5 @@
-Django>5.2
+# Django & core packages
+Django>=5.2
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
@@ -16,18 +17,26 @@ google-api-python-client
 drf-spectacular
 django-countries
 pillow
-django-cors-headers
 pandas
-openpyxl
 django-cities-light
 django-rest-passwordreset
-opencv-python
-mediapipe
-numpy
-boto3
 django-storages
 stripe
 daphne
 firebase-admin
 gunicorn
 whitenoise
+
+# HuggingFace / LangChain / AI
+google-generativeai  
+tiktoken              
+langchain 
+langchain-huggingface           
+langchain-community
+sentence-transformers
+PyMuPDF   
+faiss-cpu
+
+# PyTorch CPU wheels (use extra-index-url only for torch packages)
+torch --extra-index-url https://download.pytorch.org/whl/cpu
+torchvision --extra-index-url https://download.pytorch.org/whl/cpu
