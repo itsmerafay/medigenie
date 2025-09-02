@@ -1,16 +1,8 @@
 echo "Running migrations ....."
 python3 manage.py migrate --noinput 
 
-echo "Checking if cities data already exists ...."
-python3 manage.py shell <<EOF
-from cities_light.models import City
-if not City.objects.exists():
-    from django.core.management import call_command
-    print("No cities found. Loading cities data...")
-    call_command("cities_light")
-else:
-    print("Cities already loaded. Skipping cities_light command.")
-EOF
+echo "Loading cities data ...."
+python3 manage.py cities_light  
 
 echo "Collecting static files ...."
 python3 manage.py collectstatic --noinput
