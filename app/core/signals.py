@@ -15,7 +15,6 @@ from rest_framework import serializers
 
 from core.models import UserProfile
 from core.adapters.custom_social_auth import user_signal
-from cities_light.models import City
 
 auth_verify_signal = Signal()
 
