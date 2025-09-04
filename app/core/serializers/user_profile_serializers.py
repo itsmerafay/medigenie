@@ -1,7 +1,6 @@
 from rest_framework import serializers 
 
 from django_countries.serializer_fields import CountryField
-from cities_light.models import City 
 from core.models import UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -19,18 +18,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             )
         read_only = ("user", )
 
-    def validate_city(self, value):
-        if not isinstance(value, str):
-            raise serializers.ValidationError("Invalid city name.")
-        if not City.objects.filter(name__icontains=value).exists():
-            raise serializers.ValidationError("City not found.")
-        return value
-
     def create(self, validated_data):
         city_name = validated_data.pop("city", None)
         instance = super().create(validated_data)
         if city_name:
-            city = City.objects.get(name=city_name)
+            city = city_name
             instance.city = city
             instance.save()
         return instance
@@ -47,7 +39,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.user.save()
 
         if city_name:
-            city = City.objects.filter(name__icontains=city_name).first()
+            city = city_name
             instance.city = city
             instance.save()
 
