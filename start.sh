@@ -1,8 +1,6 @@
 echo "Running migrations ....."
 python3 manage.py migrate --noinput 
 
-echo "Loading cities data ...."
-python3 manage.py cities_light  
 
 echo "Collecting static files ...."
 python3 manage.py collectstatic --noinput
