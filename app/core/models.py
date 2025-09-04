@@ -95,7 +95,7 @@ class UserProfile(UUIDBase):
     image = models.ImageField(upload_to="image/", null=True, blank=True)
 
     gender = models.CharField(max_length=50, choices=GENDERCHOICES.choices, null=True, blank=True)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
 
     chronic_conditions = models.TextField(null=True, blank=True)
     current_medications = models.TextField(null=True, blank=True)
