@@ -1,20 +1,36 @@
 from rest_framework import serializers
 
-from docmind.models import RagSession
+from docmind.models import RagMessage, RagSession
 from docmind.utilities import build_index_from_pdf
 
 class RagSessionSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
     file = serializers.FileField(write_only=True)
+    recent_messages = serializers.SerializerMethodField()
 
     class Meta:
         model = RagSession
         fields = (
             "id", "user", "title", "file", "index_dir",
-            "embedding_model", 
+            "embedding_model", "recent_messages", 
         )
         read_only_fields = ("id", "user", )
+
+    def get_recent_messages(self, obj):
+        user = self.context["request"].user
+        recent_messages = RagMessage.objects.filter(session=obj, session__user=user).order_by("-created_at")[:5]
+        return [
+            {
+                "id": message.id,
+                "role": message.role,
+                "content": message.content,
+                "created_at": message.created_at
+            }
+
+            for message in recent_messages
+        ]
+
 
     def get_user(self, obj):
         user = obj.user
