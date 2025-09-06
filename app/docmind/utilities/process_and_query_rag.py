@@ -7,7 +7,7 @@ from django.conf import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyMuPDFLoader
 
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from docmind.services.gemini import gemini_llm_response
 
 # maxsize - size of objects that need to be kept in cache
@@ -88,7 +88,7 @@ def ask_with_rag(index_dir: str, query:str, embedding_model: str):
 
     Question: {query}
 
-    Answer clearly and concisely.
+    Answer clearly and from the doctors perspective and with in the given context of the document.
     """
 
     for chunk in gemini_llm_response(prompt):

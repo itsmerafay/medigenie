@@ -31,6 +31,10 @@ RAG_MESSAGE_URL_PATTERNS = [
         'create/', RagMessageCreateAPIView.as_view(),
         name='rag-session-create'
     ),
+   path(
+        '<uuid:session_id>/list/', RagMessageListAPIView.as_view(),
+        name='rag-session-list'
+    ),
 
 ]
 

@@ -5,14 +5,15 @@ from docmind.utilities.process_and_query_rag import ask_with_rag
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from docmind.models import RagMessage, RagSession
 from docmind.serializers import RagMessageSerializer
 
-class RagMessageCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = RagMessageSerializer
-    queryset = RagMessage.objects.all()
+# class RagMessageCreateAPIView(generics.CreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = RagMessageSerializer
+#     queryset = RagMessage.objects.all()
 
 
 class RagMessageCreateAPIView(APIView):
@@ -58,3 +59,28 @@ class RagMessageCreateAPIView(APIView):
             )
 
         return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+
+
+class RagMessageListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RagMessageSerializer
+    queryset = RagMessage.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        session_id = self.kwargs.get("session_id")
+        if session_id is None:
+            raise ValidationError({
+                "session_id": "Session id is missing"
+            })
+
+        try:
+            session = RagSession.objects.get(id=session_id, user=user)
+        
+        except RagSession.DoesNotExist:
+            raise ValidationError({
+                "session_id": "No session found for the given id"
+            })
+
+        return RagMessage.objects.select_related("session").filter(session=session)
+
