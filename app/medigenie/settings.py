@@ -18,6 +18,12 @@ from datetime import timedelta
 env = environ.Env(
     DEBUG=(bool, False)
 )
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+SILENCED_SYSTEM_CHECKS = [
+    "account.W001",   # allauth related warning: ACCOUNT_EMAIL_REQUIRED deprecated
+]
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -160,12 +166,17 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 AUTH_USER_MODEL = 'core.User'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-# ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_SIGNUP_FIELDS = {
+    "email": {"required": True},
+    "password1": {"required": True},
+    "password2": {"required": True},
+    # "username": {"required": False},  # uncomment if you don’t want usernames
+}
+
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_LOGIN_METHODS = {"email"}
+
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = False
