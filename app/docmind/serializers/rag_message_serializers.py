@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
-from docmind.models import RagMessage, RagSession
+from docmind.models import Message, Session
 from docmind.utilities import ask_with_rag
 
-class RagMessageSerializer(serializers.ModelSerializer):
+class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RagMessage
+        model = Message
         fields = (
             "id", "session", "role", "content" 
         )
@@ -18,18 +18,18 @@ class RagMessageSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         session = validated_data.get("session")
         content = validated_data.get("content")
-        role = RagMessage.ROLECHOICES.USER
+        role = Message.ROLECHOICES.USER
 
         if session:
             try:
-                session = RagSession.objects.get(id=session.id, user=user)
+                session = Message.objects.get(id=session.id, user=user)
             
-            except RagMessage.DoesNotExist:
+            except Message.DoesNotExist:
                raise NotFound({
                 "session": "No session found for the given id"
             })
 
-        RagMessage.objects.create(
+        Message.objects.create(
             session=session,
             content=content,
             role=role,
@@ -41,10 +41,10 @@ class RagMessageSerializer(serializers.ModelSerializer):
             embedding_model=session.embedding_model
         )
 
-        assistant_message = RagMessage.objects.create(
+        assistant_message = Message.objects.create(
             session=session,
             content=answer,
-            role=RagMessage.ROLECHOICES.ASSISTANT
+            role=Message.ROLECHOICES.ASSISTANT
         )
 
         return assistant_message

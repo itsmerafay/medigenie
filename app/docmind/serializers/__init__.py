@@ -1,2 +1,2 @@
-from .rag_session_serializers import RagSessionSerializer
-from .rag_message_serializers import RagMessageSerializer
+from .rag_session_serializers import SessionSerializer
+from .rag_message_serializers import MessageSerializer
