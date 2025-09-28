@@ -1,16 +1,16 @@
 from rest_framework import serializers
 
-from docmind.models import RagMessage, RagSession
+from docmind.models import Message, Session
 from docmind.utilities import build_index_from_pdf
 
-class RagSessionSerializer(serializers.ModelSerializer):
+class SessionSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
     file = serializers.FileField(write_only=True)
     recent_messages = serializers.SerializerMethodField()
 
     class Meta:
-        model = RagSession
+        model = Session
         fields = (
             "id", "user", "title", "file", "index_dir",
             "embedding_model", "recent_messages", 
@@ -19,7 +19,7 @@ class RagSessionSerializer(serializers.ModelSerializer):
 
     def get_recent_messages(self, obj):
         user = self.context["request"].user
-        recent_messages = RagMessage.objects.filter(session=obj, session__user=user).order_by("-created_at")[:5]
+        recent_messages = Message.objects.filter(session=obj, session__user=user).order_by("-created_at")[:5]
         return [
             {
                 "id": message.id,
@@ -52,7 +52,7 @@ class RagSessionSerializer(serializers.ModelSerializer):
                 "file": "You must provide a file to create a rag session"
             })
        
-        session = RagSession.objects.create(
+        session = Session.objects.create(
             user=user,
             title=title
         )

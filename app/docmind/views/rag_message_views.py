@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
-from docmind.models import RagMessage, RagSession
-from docmind.serializers import RagMessageSerializer
+from docmind.models import Message, Session
+from docmind.serializers import MessageSerializer
 
 # class RagMessageCreateAPIView(generics.CreateAPIView):
 #     permission_classes = (IsAuthenticated,)
@@ -23,7 +23,7 @@ class RagMessageCreateAPIView(APIView):
         user = self.request.user
         session_id = request.data.get("session")
         content = request.data.get("content")
-        role = RagMessage.ROLECHOICES.USER
+        role = Message.ROLECHOICES.USER
 
         if not session_id or not content:
             return StreamingHttpResponse({
@@ -32,14 +32,14 @@ class RagMessageCreateAPIView(APIView):
     
 
         try:
-            session = RagSession.objects.get(id=session_id, user=user)
+            session = Session.objects.get(id=session_id, user=user)
         
-        except RagSession.DoesNotExist:
+        except Session.DoesNotExist:
             return StreamingHttpResponse({
                 "session": "No session found for the given id"
             })
         
-        RagMessage.objects.create(
+        Message.objects.create(
             session=session,
             content=content,
             role=role,
@@ -52,10 +52,10 @@ class RagMessageCreateAPIView(APIView):
                 yield f"data: {chunk}\n\n"
 
 
-            RagMessage.objects.create(
+            Message.objects.create(
                 session=session,
                 content=answer_text,
-                role=RagMessage.ROLECHOICES.ASSISTANT
+                role=Message.ROLECHOICES.ASSISTANT
             )
 
         return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
@@ -63,8 +63,8 @@ class RagMessageCreateAPIView(APIView):
 
 class RagMessageListAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = RagMessageSerializer
-    queryset = RagMessage.objects.all()
+    serializer_class = MessageSerializer
+    queryset = Message.objects.all()
 
     def get_queryset(self):
         user = self.request.user
@@ -75,12 +75,12 @@ class RagMessageListAPIView(generics.ListAPIView):
             })
 
         try:
-            session = RagSession.objects.get(id=session_id, user=user)
+            session = Session.objects.get(id=session_id, user=user)
         
-        except RagSession.DoesNotExist:
+        except Session.DoesNotExist:
             raise ValidationError({
                 "session_id": "No session found for the given id"
             })
 
-        return RagMessage.objects.select_related("session").filter(session=session)
+        return Message.objects.select_related("session").filter(session=session)
 

@@ -4,7 +4,7 @@ from core.models import User
 from core.model_mixins import UUIDBase
 from docmind.utilities import pdf_upload_path
 
-class RagSession(UUIDBase):
+class Session(UUIDBase):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, default="New Rag Session")
@@ -18,13 +18,13 @@ class RagSession(UUIDBase):
         return self.title if self.title else ""
 
 
-class RagMessage(UUIDBase):
+class Message(UUIDBase):
 
     class ROLECHOICES(models.TextChoices):
         USER = "User", ("User")
         ASSISTANT = "Assistant", ("Assistant")
 
-    session = models.ForeignKey(RagSession, on_delete=models.CASCADE, related_name="messages")
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="messages")
     role = models.CharField(max_length=25, choices=ROLECHOICES.choices, default=ROLECHOICES.USER)
     content = models.TextField()
     
