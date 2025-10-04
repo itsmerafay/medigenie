@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
-from docmind.models import Message, Session
+from core.models import Message, Session
 from docmind.utilities import ask_with_rag
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -18,6 +18,7 @@ class MessageSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         session = validated_data.get("session")
         content = validated_data.get("content")
+        session_type = validated_data.get("session_type")
         role = Message.ROLECHOICES.USER
 
         if session:

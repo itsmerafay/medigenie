@@ -1,4 +1,4 @@
-from docmind.models import Session
+from core.models import Session
 
 class RagSessionQuerySetMixin:
 

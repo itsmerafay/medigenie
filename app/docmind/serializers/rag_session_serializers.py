@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from docmind.models import Message, Session
+from core.models import Message, Session
 from docmind.utilities import build_index_from_pdf
 
 class SessionSerializer(serializers.ModelSerializer):
@@ -14,6 +14,7 @@ class SessionSerializer(serializers.ModelSerializer):
         fields = (
             "id", "user", "title", "file", "index_dir",
             "embedding_model", "recent_messages", 
+            "session_type", 
         )
         read_only_fields = ("id", "user", )
 
@@ -45,16 +46,19 @@ class SessionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         title = validated_data.get("title") or "New Rag Session"
+        session_type = Session.SessionType.RAG
         file = validated_data.get("file")
+        
 
         if not file:
             raise serializers.ValidationError({
                 "file": "You must provide a file to create a rag session"
             })
-       
+    
         session = Session.objects.create(
             user=user,
-            title=title
+            title=title,
+            session_type=session_type,
         )
 
         session.file.save(file.name, file, save=True)
@@ -63,8 +67,8 @@ class SessionSerializer(serializers.ModelSerializer):
         build_index_from_pdf(session.file.path, idx_dir, session.embedding_model)
 
         session.index_dir = idx_dir
-        session.save()
-
+        session.save()            
+        
         return session
     
     def update(self, instance, validated_data):

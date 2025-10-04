@@ -7,14 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
-from docmind.models import Message, Session
+from core.models import Message, Session
 from docmind.serializers import MessageSerializer
-
-# class RagMessageCreateAPIView(generics.CreateAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = RagMessageSerializer
-#     queryset = RagMessage.objects.all()
-
 
 class RagMessageCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
