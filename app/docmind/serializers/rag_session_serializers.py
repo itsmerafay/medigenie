@@ -88,7 +88,7 @@ class SessionSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = validated_data.get("title") or "New Rag Session"
         session_type = Session.SessionType.RAG
-        embedding_model = "thenlper/gte-small"
+        embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
         file = validated_data.get("file")
 
         if not file:

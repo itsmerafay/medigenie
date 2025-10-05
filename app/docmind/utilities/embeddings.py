@@ -5,7 +5,7 @@ import torch
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
-FAST_EMBED = "thenlper/gte-small"
+FAST_EMBED = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 # encode method is resp for (text to numerical vectors)

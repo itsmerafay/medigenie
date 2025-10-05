@@ -16,7 +16,7 @@ from docmind.services.gemini import gemini_llm_response
 
 
 
-_vector_cache = LRUCache(maxsize=128)
+_vector_cache = LRUCache(maxsize=32)
 
 
 def pdf_upload_path(instance, filename):
@@ -121,36 +121,82 @@ def build_index_from_pdf_remote(pdf_path: str, embedding_model: str, save_dir: s
 
 #     return store
 
-import os
+# import os
+# import zipfile
+# from django.conf import settings
+
+# def unzip_index_if_needed(abs_dir):
+#     zip_path = os.path.join(abs_dir, "index.zip")
+#     if os.path.exists(zip_path):
+#         print(f"📦 Found zip at: {zip_path} — extracting...")
+#         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+#             zip_ref.extractall(abs_dir)
+#         print("✅ Extraction done.")
+#     else:
+#         print("❌ No zip found at:", zip_path)
+
+# def load_index_fast(index_dir, embedding_model):
+#     from langchain_community.vectorstores import FAISS
+#     from docmind.utilities import get_embedder
+
+#     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)
+#     print("🔍 Looking for index in:", abs_dir)
+
+#     unzip_index_if_needed(abs_dir)
+
+#     # 🧪 List files inside the folder to confirm
+#     print("📂 Contents of index dir:", os.listdir(abs_dir))
+
+#     embs = get_embedder(embedding_model)
+
+#     store = FAISS.load_local(abs_dir, embs, allow_dangerous_deserialization=True)
+#     return store
+
+
+
 import zipfile
-from django.conf import settings
+
+# --- Global cache for FAISS stores ---
+_loaded_indexes = {}
 
 def unzip_index_if_needed(abs_dir):
     zip_path = os.path.join(abs_dir, "index.zip")
     if os.path.exists(zip_path):
-        print(f"📦 Found zip at: {zip_path} — extracting...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(abs_dir)
-        print("✅ Extraction done.")
+        # ✅ Sirf tab unzip karo jab .faiss file nahi mili ho
+        if not any(fname.endswith(".faiss") for fname in os.listdir(abs_dir)):
+            print(f"📦 Found zip at: {zip_path} — extracting...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(abs_dir)
+            print("✅ Extraction done.")
     else:
         print("❌ No zip found at:", zip_path)
+
 
 def load_index_fast(index_dir, embedding_model):
     from langchain_community.vectorstores import FAISS
     from docmind.utilities import get_embedder
+
+    key = (index_dir, embedding_model)
+    if key in _loaded_indexes:
+        print("✅ Reusing cached FAISS index from memory")
+        return _loaded_indexes[key]
 
     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)
     print("🔍 Looking for index in:", abs_dir)
 
     unzip_index_if_needed(abs_dir)
 
-    # 🧪 List files inside the folder to confirm
     print("📂 Contents of index dir:", os.listdir(abs_dir))
 
     embs = get_embedder(embedding_model)
-
     store = FAISS.load_local(abs_dir, embs, allow_dangerous_deserialization=True)
+
+    # ✅ Cache the store in RAM for reuse
+    _loaded_indexes[key] = store
     return store
+
+
+
 
 # def load_index(index_dir: str, embedding_model: str):
 #     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)
