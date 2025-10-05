@@ -51,23 +51,106 @@ def build_index_from_pdf(pdf_path: str, index_dir: str, embedding_model: str):
 
     return vector_store
 
+# import requests
+# from django.conf import settings
 
-def load_index_fast(index_dir: str, embedding_model: str):
+# FASTAPI_URL = "https://itsmerafay-medigenie.hf.space/build-index/"
+
+# def build_index_from_pdf_remote(pdf_path: str, embedding_model: str):
+#     with open(pdf_path, "rb") as f:
+#         files = {"file": f}
+#         data = {"embedding_model": embedding_model}
+#         response = requests.post(FASTAPI_URL, files=files, data=data)
+        
+#     if response.status_code != 200:
+#         raise Exception(f"Index build failed: {response.text}")
+
+#     # Save the returned zip file locally
+#     zip_path = os.path.join(settings.MEDIA_ROOT, "index.zip")
+#     with open(zip_path, "wb") as f:
+#         f.write(response.content)
+
+#     return zip_path
+
+
+
+
+import os
+import requests
+from django.conf import settings
+
+FASTAPI_URL = "https://itsmerafay-medigenie.hf.space/build-index/"
+
+def build_index_from_pdf_remote(pdf_path: str, embedding_model: str, save_dir: str) -> str:
+    """
+    Sends PDF to remote FastAPI service, downloads index.zip, and saves it in `save_dir`.
+    Returns the full path of the saved zip file.
+    """
+    os.makedirs(save_dir, exist_ok=True)
+
+    with open(pdf_path, "rb") as f:
+        files = {"file": f}
+        data = {"embedding_model": embedding_model}
+        response = requests.post(FASTAPI_URL, files=files, data=data)
+
+    if response.status_code != 200:
+        raise Exception(f"❌ Index build failed: {response.text}")
+
+    zip_path = os.path.join(save_dir, "index.zip")
+    with open(zip_path, "wb") as f:
+        f.write(response.content)
+
+    print(f"✅ Saved remote index to: {zip_path}")
+    return zip_path
+
+
+
+# def load_index_fast(index_dir: str, embedding_model: str):
+#     from docmind.utilities import get_embedder
+
+#     key = (index_dir, embedding_model)
+#     store = _vector_cache.get(key)
+#     if store:
+#         return store
+    
+#     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)
+#     embs = get_embedder(embedding_model)
+
+#     store = FAISS.load_local(abs_dir, embs, allow_dangerous_deserialization=True)
+#     _vector_cache[key] = store
+
+#     return store
+
+import os
+import zipfile
+from django.conf import settings
+
+def unzip_index_if_needed(abs_dir):
+    zip_path = os.path.join(abs_dir, "index.zip")
+    if os.path.exists(zip_path):
+        print(f"📦 Found zip at: {zip_path} — extracting...")
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(abs_dir)
+        print("✅ Extraction done.")
+    else:
+        print("❌ No zip found at:", zip_path)
+
+def load_index_fast(index_dir, embedding_model):
+    from langchain_community.vectorstores import FAISS
     from docmind.utilities import get_embedder
 
-    key = (index_dir, embedding_model)
-    store = _vector_cache.get(key)
-    if store:
-        return store
-    
     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)
+    print("🔍 Looking for index in:", abs_dir)
+
+    unzip_index_if_needed(abs_dir)
+
+    # 🧪 List files inside the folder to confirm
+    print("📂 Contents of index dir:", os.listdir(abs_dir))
+
     embs = get_embedder(embedding_model)
 
     store = FAISS.load_local(abs_dir, embs, allow_dangerous_deserialization=True)
-    _vector_cache[key] = store
-
     return store
-
 
 # def load_index(index_dir: str, embedding_model: str):
 #     abs_dir = os.path.join(settings.MEDIA_ROOT, index_dir)

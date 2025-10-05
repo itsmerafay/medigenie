@@ -1,7 +1,9 @@
+import os
+from django.conf import settings
 from rest_framework import serializers
 
 from core.models import Message, Session
-from docmind.utilities import build_index_from_pdf
+from docmind.utilities import build_index_from_pdf, build_index_from_pdf_remote, unzip_index_if_needed
 
 class SessionSerializer(serializers.ModelSerializer):
 
@@ -43,34 +45,76 @@ class SessionSerializer(serializers.ModelSerializer):
                 "image": user.userprofile.image.url if user.userprofile.image else None
             }
         
+    # def create(self, validated_data):
+    #     user = self.context['request'].user
+    #     title = validated_data.get("title") or "New Rag Session"
+    #     session_type = Session.SessionType.RAG
+    #     file = validated_data.get("file")
+        
+
+    #     if not file:
+    #         raise serializers.ValidationError({
+    #             "file": "You must provide a file to create a rag session"
+    #         })
+    
+    #     session = Session.objects.create(
+    #         user=user,
+    #         title=title,
+    #         session_type=session_type,
+    #     )
+
+    #     session.file.save(file.name, file, save=True)
+
+    #     idx_dir = f"indexes/{user.id}/{session.id}"
+    #     remote_zip_path = build_index_from_pdf_remote(session.file.path, session.embedding_model)
+
+    #     # ✅ Save it locally
+    #     abs_dir = os.path.join(settings.MEDIA_ROOT, idx_dir)
+    #     os.makedirs(abs_dir, exist_ok=True)
+
+    #     with open(os.path.join(abs_dir, "index.zip"), "wb") as f:
+    #         f.write(remote_zip_path.content)  # depends on how your remote func returns it
+
+    #     # ✅ Unzip now so FAISS can load it
+    #     unzip_index_if_needed(abs_dir)
+
+    #     session.index_dir = idx_dir
+    #     session.save()
+
+        # return session
+
+
     def create(self, validated_data):
         user = self.context['request'].user
         title = validated_data.get("title") or "New Rag Session"
         session_type = Session.SessionType.RAG
+        embedding_model = "thenlper/gte-small"
         file = validated_data.get("file")
-        
 
         if not file:
-            raise serializers.ValidationError({
-                "file": "You must provide a file to create a rag session"
-            })
-    
+            raise serializers.ValidationError({"file": "You must provide a file to create a rag session"})
+
         session = Session.objects.create(
             user=user,
             title=title,
+            embedding_model=embedding_model,
             session_type=session_type,
         )
-
         session.file.save(file.name, file, save=True)
 
         idx_dir = f"indexes/{user.id}/{session.id}"
-        build_index_from_pdf(session.file.path, idx_dir, session.embedding_model)
+        abs_dir = os.path.join(settings.MEDIA_ROOT, idx_dir)
+
+        build_index_from_pdf_remote(session.file.path, embedding_model, abs_dir)
+
+        unzip_index_if_needed(abs_dir)
 
         session.index_dir = idx_dir
-        session.save()            
-        
+        session.embedding_model = embedding_model
+        session.save()
+
         return session
-    
+
     def update(self, instance, validated_data):
         user = self.context['request'].user
         instance.title = validated_data.get("title", instance.title)
