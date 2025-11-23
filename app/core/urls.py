@@ -48,8 +48,40 @@ PROFILE_URL_PATTERNS = [
 
 ]
 
+MESSAGE_URL_PATTERNS = [
+   path(
+        '<uuid:session_id>/list/', MessageListAPIView.as_view(),
+        name='session-list'
+    ),
+]
+
+
+SESSION_URL_PATTERNS = [    
+   path(
+        '<uuid:id>/retrieve/', SessionRetrieveAPIView.as_view(),
+        name='session-retrieve'
+    ),
+   path(
+        '<uuid:id>/update/', SessionUpdateAPIView.as_view(),
+        name='session-update'
+    ),
+   path(
+        '<uuid:id>/delete/', SessionDeleteAPIView.as_view(),
+        name='session-delete'
+    ),
+   path(
+        '<str:session_type>/list/', SessionListAPIView.as_view(),
+        name='session-list'
+    ),
+
+]
+
+
+
 urlpatterns = [
     path('auth/', include(AUTH_URL_PATTERNS)),
     path('google/', include(GOOGLE_URL_PATTERNS)),
-    path('profiles/', include(PROFILE_URL_PATTERNS))
+    path('profiles/', include(PROFILE_URL_PATTERNS)),
+    path('messages/', include(MESSAGE_URL_PATTERNS)),
+    path('sessions/', include(SESSION_URL_PATTERNS)),
 ]

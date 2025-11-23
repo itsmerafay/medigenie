@@ -67,12 +67,14 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "django_rest_passwordreset",
 
-    "core",
-    "docmind",
     "cities_light",
     "django_extensions",
     "django_filters",
     "corsheaders",
+
+    "core",
+    "docmind",
+    "research"
 
 ]
 

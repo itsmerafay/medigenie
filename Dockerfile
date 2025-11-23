@@ -17,14 +17,17 @@ RUN apt-get update && apt-get install -y \
 RUN python -m venv /py && /py/bin/pip install --no-cache-dir --upgrade pip
 
 # 4. Copy requirements first (cache layer)
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
+COPY ./requirements-core.txt /tmp/requirements-core.txt
+COPY ./requirements-extra.txt /tmp/requirements-extra.txt
 
-# 5. Install deps
+# 5. Install core dependencies first (faster caching)
 ARG DEV=false
-RUN /py/bin/pip install --no-cache-dir -r /tmp/requirements.txt && \
-    if [ "$DEV" = "true" ]; then /py/bin/pip install --no-cache-dir -r /tmp/requirements.dev.txt; fi && \
+RUN /py/bin/pip install --no-cache-dir -r /tmp/requirements-core.txt && \
+    if [ "$DEV" = "true" ]; then \
+        /py/bin/pip install --no-cache-dir -r /tmp/requirements-extra.txt; \
+    fi && \
     rm -rf /root/.cache/pip
+
 
 # 6. Copy project files after deps
 COPY ./app /app

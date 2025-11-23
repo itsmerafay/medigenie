@@ -4,7 +4,7 @@ import os
 import pymupdf
 from cachetools import LRUCache
 from django.conf import settings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyMuPDFLoader
 
 from langchain_community.vectorstores import FAISS
