@@ -7,22 +7,6 @@ RAG_SESSION_URL_PATTERNS = [
         'create/', RagSessionCreateAPIView.as_view(),
         name='rag-session-create'
     ),
-   path(
-        '<uuid:id>/retrieve/', RagSessionRetrieveAPIView.as_view(),
-        name='rag-session-retrieve'
-    ),
-   path(
-        '<uuid:id>/update/', RagSessionUpdateAPIView.as_view(),
-        name='rag-session-update'
-    ),
-   path(
-        '<uuid:id>/delete/', RagSessionDeleteAPIView.as_view(),
-        name='rag-session-delete'
-    ),
-   path(
-        'list/', RagSessionListAPIView.as_view(),
-        name='rag-session-list'
-    ),
 
 ]
 
@@ -31,10 +15,7 @@ RAG_MESSAGE_URL_PATTERNS = [
         'create/', RagMessageCreateAPIView.as_view(),
         name='rag-session-create'
     ),
-   path(
-        '<uuid:session_id>/list/', RagMessageListAPIView.as_view(),
-        name='rag-session-list'
-    ),
+
 
 ]
 

@@ -55,26 +55,3 @@ class RagMessageCreateAPIView(APIView):
         return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
 
-class RagMessageListAPIView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = MessageSerializer
-    queryset = Message.objects.all()
-
-    def get_queryset(self):
-        user = self.request.user
-        session_id = self.kwargs.get("session_id")
-        if session_id is None:
-            raise ValidationError({
-                "session_id": "Session id is missing"
-            })
-
-        try:
-            session = Session.objects.get(id=session_id, user=user)
-        
-        except Session.DoesNotExist:
-            raise ValidationError({
-                "session_id": "No session found for the given id"
-            })
-
-        return Message.objects.select_related("session").filter(session=session)
-
