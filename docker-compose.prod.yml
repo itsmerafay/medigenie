@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  app:
+    image: medigenie-app:latest
+    build:
+      context: .
+      args:
+        DEV: "false"
+    restart: unless-stopped
+    env_file:
+      - .env/prod.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - prod-db-data:/var/lib/postgresql/data
+    env_file:
+      - .env/prod.env
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/ssl/medigenie
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  prod-db-data:
