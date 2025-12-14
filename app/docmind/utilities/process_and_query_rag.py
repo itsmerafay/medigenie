@@ -1,14 +1,14 @@
 from operator import index
 from re import split
 import os
-import pymupdf
+import hashlib
 from cachetools import LRUCache
 from django.conf import settings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyMuPDFLoader
 
 from langchain_community.vectorstores import FAISS
-from docmind.services.gemini import gemini_llm_response
+from docmind.services.llm import stream_llm_response
 
 # maxsize - size of objects that need to be kept in cache
 # cache from cache.tool - for global cache
@@ -220,5 +220,7 @@ def ask_with_rag(index_dir: str, query:str, embedding_model: str):
     Answer clearly and from the doctors perspective and with in the given context of the document.
     """
 
-    for chunk in gemini_llm_response(prompt):
+    for chunk in stream_llm_response(prompt):
         yield chunk
+
+
