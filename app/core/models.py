@@ -1,3 +1,4 @@
+from curses import noecho
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
@@ -135,6 +136,7 @@ class Session(UUIDBase):
     class SessionType(models.TextChoices):
         RAG  = "RAG", ("RAG")
         RESEARCH = "RESEARCH", ("RESEARCH")
+        DERMAI = "DERMAI", ("DERMAI")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, default="New Rag Session")
@@ -148,7 +150,7 @@ class Session(UUIDBase):
         )
 
     def __str__(self):
-        return self.title if self.title else ""
+        return f"{self.id} - {self.title if self.title else None}"
 
 
 class Message(UUIDBase):
@@ -160,6 +162,9 @@ class Message(UUIDBase):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="messages")
     role = models.CharField(max_length=25, choices=ROLECHOICES.choices, default=ROLECHOICES.USER)
     content = models.TextField()
+    image = models.ImageField(upload_to="message/images/", null=True, blank=True)
+    audio = models.FileField(upload_to="message/audio/", null=True, blank=True)
+
     
     def __str__(self):
         return f"{self.role}: {self.content}"   
