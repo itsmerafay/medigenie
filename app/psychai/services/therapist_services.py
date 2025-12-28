@@ -2,7 +2,7 @@ import os
 from twilio.rest import Client
 from huggingface_hub import InferenceClient
 
-HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
+HF_API_TOKEN = os.environ.get("ABDUL_RAFAY_ATIQ_HF_THERAPIST")
 MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
 
 client = InferenceClient(token=HF_API_TOKEN)
