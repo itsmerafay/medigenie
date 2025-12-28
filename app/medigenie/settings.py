@@ -74,7 +74,8 @@ INSTALLED_APPS = [
 
     "core",
     "docmind",
-    "research"
+    "research",
+    "psychai",
 
 ]
 

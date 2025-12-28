@@ -1,9 +1,11 @@
+from ctypes.wintypes import PSHORT
 from curses import noecho
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.timezone import now
 from django_countries.fields import CountryField
+from datetime import date
 
 
 from django.db import models
@@ -137,6 +139,7 @@ class Session(UUIDBase):
         RAG  = "RAG", ("RAG")
         RESEARCH = "RESEARCH", ("RESEARCH")
         DERMAI = "DERMAI", ("DERMAI")
+        PSYCHAI = "PSYCHAI", ("PSYCHAI")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, default="New Rag Session")

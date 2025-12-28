@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/', include('docmind.urls')),
     path('api/', include('research.urls')),
     path('api/', include('dermai.urls')),
+    path('api/', include('psychai.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/docs/', SpectacularSwaggerView.as_view(url_name="schema")),
 ]
