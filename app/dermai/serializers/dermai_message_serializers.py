@@ -1,3 +1,4 @@
+from typing import Required
 from rest_framework import serializers
 from core.models import Message, Session
 from core.serializers import BaseMessageSerializer
@@ -51,7 +52,7 @@ from dermai.services.vision_and_transcription import GroqService
 
 class DermMessageSerializer(BaseMessageSerializer):
     session = serializers.UUIDField(write_only=True)
-    image = serializers.FileField(write_only=True)
+    image = serializers.FileField(write_only=True, required=False)
 
     class Meta(BaseMessageSerializer.Meta):
         fields = BaseMessageSerializer.Meta.fields + ("image",)
@@ -63,11 +64,13 @@ class DermMessageSerializer(BaseMessageSerializer):
         except Session.DoesNotExist:
             raise serializers.ValidationError("Invalid session")
 
-    def create_user_message(self, session, content):
+    # ✅ FIX: image parameter add kiya
+    def create_user_message(self, session, content, image=None):
         return Message.objects.create(
             session=session,
             role=Message.ROLECHOICES.USER,
             content=content,
+            image=image   # ✅ now supported
         )
 
     def create_assistant_message(self, session, content):
@@ -76,4 +79,5 @@ class DermMessageSerializer(BaseMessageSerializer):
             role=Message.ROLECHOICES.ASSISTANT,
             content=content,
         )
+
 
