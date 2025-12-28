@@ -11,6 +11,6 @@ class SessionQuerySetMixin:
     def get_queryset(self):
         user = self.request.user
         session_type = (self.kwargs.get("session_type")).upper()
-        if session_type in ("RAG", "RESEARCH"):
+        if session_type in ("RAG", "RESEARCH", "DERMAI", "PSYCHAI"):
             sessions = Session.objects.select_related("user").filter(user=user, session_type=session_type)  
         return sessions
