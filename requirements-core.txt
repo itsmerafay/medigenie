@@ -42,6 +42,11 @@ sentence-transformers
 PyMuPDF   
 faiss-cpu
 
+langchain-openai>=0.1.6
+openrouter>=0.1.1
+twilio>=9.9.0
+
+
 # PyTorch CPU wheels (use extra-index-url only for torch packages)
 torch --extra-index-url https://download.pytorch.org/whl/cpu
 torchvision --extra-index-url https://download.pytorch.org/whl/cpu
