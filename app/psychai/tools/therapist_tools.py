@@ -1,3 +1,4 @@
+import os
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain.tools import tool
@@ -39,10 +40,9 @@ def find_nearby_therapists_by_location(location: str) -> str:
 
 tools = [ask_mental_health_specialist, emergency_call_tool, find_nearby_therapists_by_location]
 
-# LLM with streaming enabled
 llm = ChatOpenAI(
     model="openai/gpt-3.5-turbo",
-    api_key="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",
+    api_key=os.environ.get("ABDUL_RAFAY_ATIQ_OPENROUTER_CHAT_GPT_THERAPIST"),
     base_url="https://openrouter.ai/api/v1",
     temperature=0.7,
     max_tokens=512,
