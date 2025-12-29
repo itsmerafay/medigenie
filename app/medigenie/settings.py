@@ -187,6 +187,7 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 CORS_ALLOW_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
+    "https://api.medigenie.hashkoders.com",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://localhost:3000",
