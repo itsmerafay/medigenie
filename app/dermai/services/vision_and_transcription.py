@@ -211,7 +211,6 @@ class GroqService:
             stream=True
         )
 
-        # ✅ stream tokens
         for chunk in response:
             delta = chunk.choices[0].delta
             if delta and getattr(delta, "content", None):
