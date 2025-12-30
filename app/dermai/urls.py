@@ -18,7 +18,10 @@ DERM_MESSAGE_URL_PATTERNS = [
         'create/', views.DermMessageCreateAPIView.as_view(),
         name='derm-message-create'
     ),
-
+   path(
+        'createssss/testtttttt', views.DermMessageCreateAPIView.as_view(),
+        name='derm-message-create'
+    ),
 ]
 
 
