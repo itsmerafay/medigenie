@@ -50,19 +50,19 @@ def query_therapist(prompt: str) -> str:
 def call_emergency(username: str):
     """Handle emergency situations"""
 
-    # TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-    # TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-    # WHATSAPP_FROM = os.getenv("WHATSAPP_FROM")
-    # WHATSAPP_TO = os.getenv("WHATSAPP_TO")
+    TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+    TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+    WHATSAPP_FROM = os.getenv("WHATSAPP_FROM")
+    WHATSAPP_TO = os.getenv("WHATSAPP_TO")
 
-    # emergency_message = f"🚨 EMERGENCY ALERT 🚨\n\nUser: {username}\nStatus: In crisis - expressing suicidal thoughts or self-harm intent\nTime: {os.popen('date').read().strip()}\n\nImmediate intervention required. Please contact emergency services."
+    emergency_message = f"🚨 EMERGENCY ALERT 🚨\n\nUser: {username}\nStatus: In crisis - expressing suicidal thoughts or self-harm intent\nTime: {os.popen('date').read().strip()}\n\nImmediate intervention required. Please contact emergency services."
 
-    # client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    # client.messages.create(
-    #     body=emergency_message,
-    #     from_=WHATSAPP_FROM,
-    #     to=WHATSAPP_TO
-    # )
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    client.messages.create(
+        body=emergency_message,
+        from_=WHATSAPP_FROM,
+        to=WHATSAPP_TO
+    )
     
     print(f"🚨 EMERGENCY TRIGGERED for {username}")
     pass
