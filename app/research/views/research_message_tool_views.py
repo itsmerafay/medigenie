@@ -44,7 +44,6 @@ class ResearchMessageCreateAPIView(APIView):
             full_text = ""
             
             try:
-                # Create new event loop for this request
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 
@@ -63,10 +62,11 @@ class ResearchMessageCreateAPIView(APIView):
                         # Token-by-token streaming from LLM
                         if kind == "on_chat_model_stream":
                             chunk = event.get("data", {}).get("chunk")
-                            if chunk and hasattr(chunk, "content") and chunk.content:
-                                token = chunk.content
-                                full_text += token
+                            token = service._simplify_chunk(chunk)
+                            if token:  # only yield if there is real text
+                                full_text += token + " "  # add a space between tokens
                                 yield f"data: {token}\n\n"
+
                         
                         # Tool execution status
                         elif kind == "on_tool_start":
