@@ -204,23 +204,56 @@ def load_index_fast(index_dir, embedding_model):
 #     return FAISS.load_local(abs_dir, embs, allow_dangerous_deserialization=True)
 
 
-def ask_with_rag(index_dir: str, query:str, embedding_model: str):
+# def ask_with_rag(index_dir: str, query:str, embedding_model: str):
+#     vector_storage = load_index_fast(index_dir, embedding_model)
+#     docs = vector_storage.similarity_search(query, k=3)
+#     context = "\n\n".join([doc.page_content for doc in docs])
+#     prompt = f"""
+    
+#     You are a helpful medical assistant. Answer strictly using the context
+
+#     Context:
+#     {context}
+
+#     Question: {query}
+
+#     Answer clearly and from the doctors perspective and with in the given context of the document.
+#     """
+
+#     for chunk in stream_llm_response(prompt):
+#         yield chunk
+
+
+
+
+def ask_with_rag(index_dir: str, query: str, embedding_model: str):
+    from research.utils import clean_markdown
+    
     vector_storage = load_index_fast(index_dir, embedding_model)
     docs = vector_storage.similarity_search(query, k=3)
     context = "\n\n".join([doc.page_content for doc in docs])
-    prompt = f"""
     
-    You are a helpful medical assistant. Answer strictly using the context
+    prompt = f"""
+        You are a helpful medical assistant. Answer strictly using the context.
 
-    Context:
-    {context}
+        Context:
+        {context}
 
-    Question: {query}
+        Question: {query}
 
-    Answer clearly and from the doctors perspective and with in the given context of the document.
-    """
-
+        Answer clearly and from the doctors perspective and within the given context of the document.
+        Provide your response in plain text without any markdown formatting like **, ##, -, or bullet points.
+        Use normal paragraphs with proper spacing between sections.
+        """
+            
+    full_response = ""
     for chunk in stream_llm_response(prompt):
+        full_response += chunk
         yield chunk
+    
+    # Clean markdown from the complete response after streaming
+    # This is for saving to database
+    cleaned_response = clean_markdown(full_response)
+    return cleaned_response
 
 
